@@ -1,0 +1,214 @@
+homeassistant:
+  # Name of the location where Home Assistant is running
+  name: Tui Home
+  # Location required to calculate the time the sun rises and sets
+  latitude: 13.9602524
+  longitude: 100.6688304
+  # Impacts weather/sunrise data (altitude above sea level in meters)
+  elevation: 1.5
+  # metric for Metric, imperial for Imperial
+  unit_system: metric
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  time_zone: Asia/Bangkok
+  # Customization file
+  customize: !include customize.yaml
+
+# Show links to resources in log and frontend
+# introduction:
+
+# Enables the frontend
+frontend:
+
+# Enables configuration UI
+config:
+  
+
+
+
+# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+# http:
+#   base_url: tuihome.duckdns.org:8123
+#   ssl_certificate: /home/pi/.ssh/tuihome.pem
+#   ssl_key: /home/pi/.ssh/tuihome.key
+
+# Checks for available updates
+# Note: This component will send some information about your system to
+# the developers to assist with development of Home Assistant.
+# For more information, please see:
+# https://home-assistant.io/blog/2016/10/25/explaining-the-updater/
+updater:
+  # Optional, allows Home Assistant developers to focus on popular components.
+  # include_used_components: true
+
+# Discover some devices automatically
+discovery:
+
+# Allows you to issue voice commands from the frontend in enabled browsers
+conversation:
+
+# Enables support for tracking state changes over time
+history:
+
+# View all events in a logbook
+logbook:
+
+# Enables a map showing the location of tracked devices
+map:
+
+# Track the sun
+sun:
+
+
+
+# Text to speech
+tts:
+  - platform: google
+
+# Cloud
+cloud:
+  google_actions:
+    filter:
+      include_entities:
+        - light.kitchen
+        - light.kitchen_left
+      include_domains:
+        - switch
+      exclude_entities:
+        - switch.outside
+    entity_config:
+      switch.kitchen:
+        name: Custom Name for Google Assistant
+        aliases:
+         - bright lights
+         - entry lights
+        room: living room
+
+# Dynamic dns
+duckdns:
+  domain: tuihome.duckdns.org
+  access_token: 191c9f2e-6b3b-4448-90f5-2c914942f890
+
+google_assistant:
+  project_id: smarthomedemo-223615
+  api_key: PE2GdLBULuG8qAGQTl93qfWM
+  exposed_domains:
+    - switch
+    - light
+    - group
+    - media_player
+    - scene
+    - script
+    - input boolean
+  entity_config:
+    switch.kitchen:
+      name: Kitchen Light
+      aliases:
+        - BRIGHT_LIGHTS
+        - ENTRY_LIGHTS
+    light.living_room:
+      expose: true
+      room: LIVING_ROOM
+
+# Notify
+notify me:
+  platform: pushbullet
+  api_key: "o.XdOgu32DQeEWmDxmMcQQVi2mrOaEkqBS"
+  name: mypushbullet
+# Media player
+media_player:
+  - platform: samsungtv
+    name: TV
+    host: 192.168.1.202
+    port: 55000
+    mac: 78:ab:bb:bf:07:06
+    timeout: 30
+
+
+# Sensors
+sensor:
+  # Weather prediction
+  - platform: yr
+  - platform: moon
+  - platform: dht
+    sensor: DHT11
+    pin: 2 # GPIO2
+    temperature_offset: -1.0
+    humidity_offset: 0
+    monitored_conditions:
+      - temperature
+      - humidity
+
+# binary_sensor:
+#   - platform: rpi_gpio
+#     ports:
+#       3: PIR TV # GPIO17
+
+# Light
+light:
+  - name: "Bed room"
+    unique_id: light.bedroom
+    platform: mqtt
+    command_topic: "home/bed/light/switch"
+  - name: "Bath room in bed room"
+    unique_id: light.bedroom.bathroom  
+    platform: mqtt
+    command_topic: "home/bed/bath/light/switch"
+  - name: "Living room tv"
+    unique_id: light.living_room.tv
+    platform: mqtt
+    command_topic: "home/living/tv/light/switch"
+  - name: "Living room sofa"
+    unique_id: light.living_room.sofa
+    platform: mqtt
+    command_topic: "home/living/sofa/light/switch"
+  - name: "Living room romantic"
+    unique_id: light.living_room.romantic
+    platform: mqtt
+    command_topic: "home/living/romantic/light/switch"
+  - name: "Kitchen room"
+    unique_id: light.kitchen_room
+    platform: mqtt
+    command_topic: "home/kitchen/light/switch"
+  - name: "Counter"
+    unique_id: light.counter
+    platform: mqtt
+    command_topic: "home/counter/light/switch"
+  - name: "Home front"
+    unique_id: light.home_front
+    platform: mqtt
+    command_topic: "home/front/light/switch"
+  - name: "Home back"
+    unique_id: light.home_back
+    platform: mqtt
+    command_topic: "home/back/light/switch"
+  - name: "Bath room back"
+    unique_id: light.home_back.bathroom
+    platform: mqtt
+    command_topic: "home/back/bath/light/switch"
+
+shell_command:
+  send_ir: 'irsend SEND_ONCE Samsung_BN59-00516A_TV KEY_CHANNELUP'
+
+input_number:
+  living_room_air:
+    name: Air Living room
+    icon: mdi:air-conditioner
+    initial: 25
+    min: 18
+    max: 32
+    step: 1
+    mode: box
+    unit_of_measurement: °C
+  bedroom_air:
+    name: Air Bedroom
+    icon: mdi:air-conditioner
+    initial: 25
+    min: 18
+    max: 32
+    step: 1
+    mode: box
+    unit_of_measurement: °C
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml

@@ -1,0 +1,61 @@
+- id: '1543916377534'
+  alias: sendNotiOnSunset
+  trigger:
+  - platform: sun
+    event: sunset
+  condition: []
+  action:
+  - service: notify.mypushbullet
+    alias: ''
+    data:
+      message: Beautiful sunset!
+  - delay: 0:35
+  - service: notify.mypushbullet
+    data:
+      message: Oh wow you really missed something great.
+- id: '1543916761839'
+  alias: lightBedroomTurnOn
+  trigger:
+  - platform: mqtt
+    topic: home/bed/light/switch
+    payload: 'ON'
+  condition: []
+  action:
+  - service: notify.mypushbullet
+    data:
+      message: light is on
+- id: '1544083924773'
+  alias: Turn on kitchen light when there is movement
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.pir_tv
+    to: 'on'
+  condition: []
+  action:
+  - service: light.turn_on
+    data:
+      entity_id: light.kitchen_room
+- id: '1544084106807'
+  alias: Turn off kitchen light 10 minutes after last movement
+  trigger:
+  - entity_id: binary_sensor.pir_tv
+    platform: state
+    to: 'off'
+  condition: []
+  action:
+  - data:
+      entity_id: light.kitchen_room
+    service: light.turn_off
+- id: '1544693022915'
+  alias: Change TV Channel
+  trigger:
+  - platform: mqtt
+    topic: /home/tv/channel/
+  condition: []
+  action:
+  - alias: ''
+    data:
+      KEY:
+      - KEY_1
+      - KEY_0
+    service: shell_command.send_ir
